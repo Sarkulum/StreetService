@@ -1,0 +1,1 @@
+A get Endpoint using Spring that can be called with either a Locality, plz and/or a Streetname to give a List of german Streets that match the Params. It uses OpenPlz and calls it, could be used for autocomplied.
