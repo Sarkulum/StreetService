@@ -1,6 +1,6 @@
 package Unused.EncodingAndDecoding
 
-import com.example.SmartSteuer.application.Photon.RequestToPhoton
+import Unused.Photon.RequestToPhoton
 import kotlinx.coroutines.runBlocking
 
 

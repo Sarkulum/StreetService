@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Street Search</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+    }
+    .input-container {
+        margin-bottom: 15px;
+    }
+    label {
+        font-weight: bold;
+        margin-right: 10px;
+    }
+    input, select {
+        padding: 8px;
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    #streetDropdown {
+        width: 100%;
+        max-width: 400px;
+    }
+  </style>
+</head>
+<body>
+<h1>Search for Street</h1>
+<div class="input-container">
+  <label for="streetname">Streetname:</label>
+  <input type="text" id="streetname" placeholder="Enter street name" />
+</div>
+<div class="input-container">
+  <label for="plz">PLZ:</label>
+  <input type="text" id="plz" placeholder="Enter postal code" />
+</div>
+<div class="input-container">
+  <label for="locality">Locality:</label>
+  <input type="text" id="locality" placeholder="Enter locality" />
+</div>
+
+<h3>Matching Streets:</h3>
+<label for="streetDropdown"></label><select id="streetDropdown">
+  <option value="">Select a street...</option>
+</select>
+
+<script src="script.js"></script>
+</body>
+</html>
