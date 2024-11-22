@@ -2,25 +2,32 @@ package com.example.SmartSteuer.application.OpenPLZ
 
 import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 
 @RestController
-class Controller(
+@RequestMapping("/api/OpenPLZ")
+class StreetController(
     @Qualifier("streetService") private val service: StreetService
 ){
-    @GetMapping("/api/OpenPLZ/streets/{plz}")
-    fun getStreetsWithPLZ(@PathVariable plz: String)= runBlocking{
-        val outputStreets = service.requestToOpenPLZ(plz)
+    @GetMapping("/streets/{name}/{plz}/{locality}")
+    fun getStreetsWithAllParams(
+        @PathVariable name: String,
+        @PathVariable plz: String,
+        @PathVariable locality: String
+    )= runBlocking{
+        val outputStreets = service.requestToOpenPLZ(name, plz, locality)
         return@runBlocking outputStreets
     }
 
-    @GetMapping("/api/OpenPLZ/fullText/{input}")
-    fun getStreetsWithText(@PathVariable input: String) = runBlocking {
-        val outputStreets = service.requestUseingText(input)
+    @GetMapping("/streets")
+    fun getStreetsWithQueryParams(
+        @RequestParam(name = "name", required = false) name: String?,
+        @RequestParam(name = "plz", required = false) plz: String?,
+        @RequestParam(name = "locality", required = false) locality: String?
+    )= runBlocking {
+        val outputStreets = service.requestToOpenPLZ(name, plz, locality)
         return@runBlocking outputStreets
     }
-
+    // Url format looks like this /api/OpenPLZ/streets?name="SomeNameHere"&plz="SomePLZHere"&locality="SomeLocalityHere"
 }

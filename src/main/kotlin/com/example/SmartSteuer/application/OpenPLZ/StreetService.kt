@@ -12,7 +12,7 @@ import io.ktor.serialization.kotlinx.json.*
 
 @Service
 class StreetService() {
-    suspend fun requestToOpenPLZ(plz: String): List<StreetInfo> {
+    suspend fun requestToOpenPLZ(name: String?, plz: String?, locality: String?): List<StreetInfo> {
             val client = HttpClient(CIO) {
                 install(ContentNegotiation) {
                     json(Json {
@@ -22,8 +22,9 @@ class StreetService() {
                 }
             }
 
+        val validStreet = name?.encodeURLParameter()
 
-        val responseBody: List<LocationResponse> = client.get("https://openplzapi.org/de/Streets?postalCode=$plz").body()
+        val responseBody: List<LocationResponse> = client.get("https://openplzapi.org/de/Streets?name=$validStreet&postalCode=$plz&locality=$locality").body()
 
 
         val streetInfoList = responseBody.map { location ->
