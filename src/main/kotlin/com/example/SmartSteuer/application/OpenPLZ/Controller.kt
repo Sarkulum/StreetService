@@ -10,16 +10,6 @@ import org.springframework.web.bind.annotation.*
 class StreetController(
     @Qualifier("streetService") private val service: StreetService
 ){
-    @GetMapping("/streets/{name}/{plz}/{locality}")
-    fun getStreetsWithAllParams(
-        @PathVariable name: String,
-        @PathVariable plz: String,
-        @PathVariable locality: String
-    )= runBlocking{
-        val outputStreets = service.requestToOpenPLZ(name, plz, locality)
-        return@runBlocking outputStreets
-    }
-
     @GetMapping("/streets")
     fun getStreetsWithQueryParams(
         @RequestParam(name = "name", required = false) name: String?,

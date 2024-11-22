@@ -12,27 +12,37 @@ import io.ktor.serialization.kotlinx.json.*
 
 @Service
 class StreetService() {
-    suspend fun requestToOpenPLZ(name: String?, plz: String?, locality: String?): List<StreetInfo> {
-        val client = HttpClient(CIO) {
-            install(ContentNegotiation) {
-                json(Json {
-                    prettyPrint = true
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                })
+    val client = HttpClient(CIO) {
+        install(ContentNegotiation) {
+            json(Json {
+                prettyPrint = true
+                isLenient = true
+                ignoreUnknownKeys = true
+            })
+        }
+    }
+    suspend fun requestToOpenPLZ(name: String?, plz: String?, locality: String?): Any {
+
+        if (name.isNullOrEmpty() && plz.isNullOrEmpty() && locality.isNullOrEmpty()){
+            return "No street with matching params found"
+        }
+
+        try {
+            val validStreet = name?.encodeURLParameter()
+
+            val responseBody: List<LocationResponse> =
+                client.get("https://openplzapi.org/de/Streets?name=$validStreet&postalCode=$plz&locality=$locality")
+                    .body()
+
+
+            val streetInfoList = responseBody.map { location ->
+                val outputStreet = location.name
+                val outputLocality = location.locality
+                StreetInfo(outputStreet, outputLocality)
             }
+            return streetInfoList
+        } catch (e: Exception) {
+            return "Error while fetching data: ${e.message}"
         }
-
-        val validStreet = name?.encodeURLParameter()
-
-        val responseBody: List<LocationResponse> = client.get("https://openplzapi.org/de/Streets?name=$validStreet&postalCode=$plz&locality=$locality").body()
-
-
-        val streetInfoList = responseBody.map { location ->
-            val outputStreet = location.name
-            val outputLocality = location.locality
-            StreetInfo(outputStreet, outputLocality)
-        }
-        return streetInfoList
     }
 }
