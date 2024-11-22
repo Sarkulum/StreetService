@@ -1,3 +1,7 @@
+
+@GetMapping("/script.js")
+
+console.log("Script loaded!");
 async function fetchStreets() {
     const streetname = document.getElementById('streetname').value;
     const plz = document.getElementById('plz').value;
