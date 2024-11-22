@@ -13,34 +13,20 @@ import io.ktor.serialization.kotlinx.json.*
 @Service
 class StreetService() {
     suspend fun requestToOpenPLZ(name: String?, plz: String?, locality: String?): List<StreetInfo> {
-            val client = HttpClient(CIO) {
-                install(ContentNegotiation) {
-                    json(Json {
-                        prettyPrint = true
-                        isLenient = true
-                    })
-                }
+        val client = HttpClient(CIO) {
+            install(ContentNegotiation) {
+                json(Json {
+                    prettyPrint = true
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                })
             }
+        }
 
         val validStreet = name?.encodeURLParameter()
 
         val responseBody: List<LocationResponse> = client.get("https://openplzapi.org/de/Streets?name=$validStreet&postalCode=$plz&locality=$locality").body()
 
-
-        val streetInfoList = responseBody.map { location ->
-            val outputStreet = location.name
-            val outputLocality = location.locality
-            StreetInfo(outputStreet, outputLocality)
-        }
-        return streetInfoList
-    }
-
-    suspend fun requestUseingText(input: String): List<StreetInfo>{
-        val client = HttpClient(CIO)
-
-        val validUrl = input.encodeURLParameter()
-
-        val responseBody: List<LocationResponse> = client.get("https://openplzapi.org/de/FullTextSearch?searchTerm=$validUrl").body()
 
         val streetInfoList = responseBody.map { location ->
             val outputStreet = location.name
