@@ -21,31 +21,26 @@
         font-size: 16px;
         margin-bottom: 10px;
     }
-    #streetDropdown {
-        width: 100%;
-        max-width: 400px;
-    }
   </style>
 </head>
 <body>
 <h1>Search for Street</h1>
 <div class="input-container">
   <label for="streetname">Streetname:</label>
-  <input type="text" id="streetname" placeholder="Enter street name" />
+  <input type="text" id="streetname" placeholder="Enter your street" list="suggestions" oninput="fetchAndUpdateDropdown()" onchange="addLocality()"/>
+
+  <datalist id="suggestions">
+
+  </datalist>
 </div>
 <div class="input-container">
   <label for="plz">PLZ:</label>
-  <input type="text" id="plz" placeholder="Enter postal code" />
+  <input type="text" id="plz" placeholder="Enter postal code" list="suggestions" oninput="fetchAndUpdateDropdown()" onchange="addLocality()"/>
 </div>
 <div class="input-container">
   <label for="locality">Locality:</label>
-  <input type="text" id="locality" placeholder="Enter locality" />
+  <input type="text" id="locality" placeholder="Enter locality" list="suggestions" oninput="fetchAndUpdateDropdown()" onchange="addLocality()"/>
 </div>
-
-<h3>Matching Streets:</h3>
-<label for="streetDropdown"></label><select id="streetDropdown">
-  <option value="">Select a street...</option>
-</select>
 
 <script src="script.js"></script>
 </body>

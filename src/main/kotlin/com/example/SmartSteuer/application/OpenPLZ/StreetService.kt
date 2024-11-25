@@ -38,7 +38,8 @@ class StreetService() {
             val streetInfoList = responseBody.map { location ->
                 val outputStreet = location.name
                 val outputLocality = location.locality
-                StreetInfo(outputStreet, outputLocality)
+                val outputPostalCode = location.postalCode
+                StreetInfo(outputStreet, outputLocality, outputPostalCode,)
             }
             return streetInfoList
         } catch (e: Exception) {

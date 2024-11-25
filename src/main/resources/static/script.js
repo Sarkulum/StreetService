@@ -1,38 +1,75 @@
+const streetInput = document.getElementById("streetname");
+const plzInput = document.getElementById("plz");
+const localityInput = document.getElementById("locality");
+const dropdown = document.getElementById("streetDropdown");
 
-@GetMapping("/script.js")
+class Script {
+    constructor() {
+        this.data = [];
+    }
 
-console.log("Script loaded!");
-async function fetchStreets() {
-    const streetname = document.getElementById('streetname').value;
-    const plz = document.getElementById('plz').value;
-    const locality = document.getElementById('locality').value;
-
-    let queryParams = new URLSearchParams();
-    if (streetname) queryParams.append('name', streetname);
-    if (plz) queryParams.append('plz', plz);
-    if (locality) queryParams.append('locality', locality);
-
+    async fetchAndUpdateDropdown() {
         try {
-            const response = await fetch(`/api/OpenPLZ/streets?${queryParams.toString()}`);
-            const data = await response.json();
+            const name = streetInput.value.trim();
+            const plz = plzInput.value.trim();
+            const locality = localityInput.value.trim();
 
-            const dropdown = document.getElementById('streetDropdown');
-            dropdown.innerHTML = '<option value="">Select a street...</option>'; // Clear the dropdown
-
-            if (data && Array.isArray(data)) {
-                data.forEach(street => {
-                    const option = document.createElement('option');
-                    option.value = street.outputStreet;
-                    option.textContent = `${street.outputStreet} (${street.outputLocality})`;
-                    dropdown.appendChild(option);
-                });
+            if (!name && !plz && !locality) {
+                dropdown.innerHTML = '<option value="">Enter values to search...</option>';
+                return;
             }
-        } catch (error) {
-            console.error('Error fetching streets:', error);
+
+            const url = `/api/OpenPLZ/streets?name=${encodeURIComponent(name)}&plz=${encodeURIComponent(plz)}&locality=${encodeURIComponent(locality)}`;
+
+            const response = await fetch(url);
+
+            const datalist = document.getElementById('suggestions');
+
+            if (response.ok) {
+                try {
+                    datalist.innerHTML = '';
+                    this.data = await response.json();
+
+                    this.data.forEach((item) => {
+                        const option = document.createElement('option');
+                        option.value = item.outputStreet;
+                        option.textContent = `${item.outputStreet} (${item.outputLocality})`;
+                        datalist.appendChild(option);
+                    });
+                    console.log(this.data); //Debug
+                } catch (jsonError) {
+                    dropdown.innerHTML = '<option value="">Invalid data received</option>';
+                }
+            } else {
+                dropdown.innerHTML = `<option value="">Error: ${response.status} - ${response.statusText}</option>`;
+            }
+        } catch (networkError) {
+            dropdown.innerHTML = '<option value="">Failed to fetch data</option>';
         }
-    } else {
-        const dropdown = document.getElementById('streetDropdown');
-        dropdown.innerHTML = '<option value="">Select a street...</option>';
+    }
+
+    addLocality() {
+        const streetField = document.getElementById('streetname')
+        const localityField = document.getElementById('locality');
+        const plzField = document.getElementById('plz');
+
+        if (this.data.length > 0) {
+            const { outputStreet, outputLocality, outputPostalCode } = this.data[0];
+            localityField.value = `${outputLocality}`;
+            plzField.value = `${outputPostalCode}`
+        } else {
+            localityField.value = '';
+            plzField.value = '';
+        }
+    }
 }
 
-setInterval(fetchStreets, 2000);
+const scriptInstance = new Script();
+
+function fetchAndUpdateDropdown() {
+    scriptInstance.fetchAndUpdateDropdown();
+}
+
+function addLocality() {
+    scriptInstance.addLocality();
+}
