@@ -27,15 +27,15 @@
 <h1>Search for Street</h1>
 <div class="input-container">
   <label for="streetname">Streetname:</label>
-  <input type="text" id="streetname" placeholder="Enter your street" list="suggestions" oninput="fetchAndUpdateDropdown()" onchange="addLocality()"/>
+  <input type="text" id="streetname" placeholder="Enter your street" list="suggestions" oninput="fetchAndUpdateDataList()" onchange="addOtherInformation()"/>
 </div>
 <div class="input-container">
   <label for="plz">PLZ:</label>
-  <input type="text" id="plz" placeholder="Enter postal code" list="suggestions" oninput="fetchAndUpdateDropdown()" onchange="addLocality()"/>
+  <input type="text" id="plz" placeholder="Enter postal code" list="suggestions" oninput="fetchAndUpdateDataList()" onchange="addOtherInformation()"/>
 </div>
 <div class="input-container">
   <label for="locality">Locality:</label>
-  <input type="text" id="locality" placeholder="Enter locality" list="suggestions" oninput="fetchAndUpdateDropdown()" onchange="addLocality()"/>
+  <input type="text" id="locality" placeholder="Enter locality" list="suggestions" oninput="fetchAndUpdateDataList()" onchange="addOtherInformation()"/>
 </div>
 
 <datalist id="suggestions"></datalist>

@@ -6,9 +6,10 @@ const dropdown = document.getElementById("streetDropdown");
 class Script {
     constructor() {
         this.data = [];
+        this.isDatalistSelection = false;
     }
 
-    async fetchAndUpdateDropdown() {
+    async fetchAndUpdateDataList() {
         try {
             const name = streetInput.value.trim();
             const plz = plzInput.value.trim();
@@ -22,7 +23,6 @@ class Script {
             const url = `/api/OpenPLZ/streets?name=${encodeURIComponent(name)}&plz=${encodeURIComponent(plz)}&locality=${encodeURIComponent(locality)}`;
 
             const response = await fetch(url);
-
             const datalist = document.getElementById('suggestions');
 
             if (response.ok) {
@@ -36,49 +36,73 @@ class Script {
                         option.textContent = `${item.outputStreet} (${item.outputPostalCode} ${item.outputLocality})`;
                         datalist.appendChild(option);
                     });
-                    console.log(this.data); //Debug
+                    console.log(this.data); // Debug
                 } catch (jsonError) {
-                    dropdown.innerHTML = '<option value="">Invalid data received</option>';
+                    console.error("Failed to parse the response JSON:", jsonError);
+                    dropdown.innerHTML = '<option value="">Invalid data received. Please try again.</option>';
                 }
             } else {
+                console.error(`Failed to fetch data: ${response.status} - ${response.statusText}`);
                 dropdown.innerHTML = `<option value="">Error: ${response.status} - ${response.statusText}</option>`;
             }
         } catch (networkError) {
-            dropdown.innerHTML = '<option value="">Failed to fetch data</option>';
+            console.error("Network error occurred while fetching data:", networkError);
+            dropdown.innerHTML = '<option value="">Failed to fetch data. Please check your connection.</option>';
         }
     }
 
-    addLocality() {
-        const streetField = document.getElementById('streetname')
+    addOtherInformation(selectedValue) {
+        const streetField = document.getElementById('streetname');
         const localityField = document.getElementById('locality');
         const plzField = document.getElementById('plz');
 
-        const { outputStreet, outputLocality, outputPostalCode } = this.data[0];
+        if (this.data.length > 0 && this.isDatalistSelection) {
+            const firstItem = this.data[0];
 
-        if (this.data.length > 0) {
-            if (streetField.value !== outputStreet) {
-                streetField.value = `${outputStreet}`
+            if (firstItem) {
+                const {outputStreet, outputLocality, outputPostalCode} = firstItem;
+
+                if (streetField.value !== outputStreet) {
+                    streetField.value = `${outputStreet}`;
+                }
+                if (localityField.value !== outputLocality) {
+                    localityField.value = `${outputLocality}`;
+                }
+                if (plzField.value !== outputPostalCode) {
+                    plzField.value = `${outputPostalCode}`;
+                }
+                this.isDatalistSelection = false;
+            } else {
+                console.warn("The first item in this.data is undefined or empty.");
             }
-            if (localityField.value !== outputLocality){
-                localityField.value = `${outputLocality}`;
-            }
-            if (plzField.value !== outputPostalCode){
-                plzField.value = `${outputPostalCode}`
-            }
-        }/* else {
-            localityField.value = '';
-            plzField.value = '';
+        } else {
+            console.warn("No valid data found for the selected street.");
         }
-        */
+    }
+
+    monitorUserInput(){
+        const streetField = document.getElementById('streetname');
+
+        streetField.addEventListener('input', () => {
+            this.isDatalistSelection = false;
+        });
+
+        streetField.addEventListener('change', () => {
+            this.isDatalistSelection = true;
+            const selectedValue = streetField.value;
+            this.addLocality(selectedValue);
+        });
     }
 }
 
 const scriptInstance = new Script();
 
-function fetchAndUpdateDropdown() {
-    scriptInstance.fetchAndUpdateDropdown();
+function fetchAndUpdateDataList() {
+    scriptInstance.fetchAndUpdateDataList();
 }
 
-function addLocality() {
-    scriptInstance.addLocality();
+function addOtherInformation() {
+    scriptInstance.addOtherInformation();
 }
+
+scriptInstance.monitorUserInput();
