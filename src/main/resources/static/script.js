@@ -33,7 +33,7 @@ class Script {
                     this.data.forEach((item) => {
                         const option = document.createElement('option');
                         option.value = item.outputStreet;
-                        option.textContent = `${item.outputStreet} (${item.outputLocality})`;
+                        option.textContent = `${item.outputStreet} (${item.outputPostalCode} ${item.outputLocality})`;
                         datalist.appendChild(option);
                     });
                     console.log(this.data); //Debug
@@ -53,14 +53,23 @@ class Script {
         const localityField = document.getElementById('locality');
         const plzField = document.getElementById('plz');
 
+        const { outputStreet, outputLocality, outputPostalCode } = this.data[0];
+
         if (this.data.length > 0) {
-            const { outputStreet, outputLocality, outputPostalCode } = this.data[0];
-            localityField.value = `${outputLocality}`;
-            plzField.value = `${outputPostalCode}`
-        } else {
+            if (streetField.value !== outputStreet) {
+                streetField.value = `${outputStreet}`
+            }
+            if (localityField.value !== outputLocality){
+                localityField.value = `${outputLocality}`;
+            }
+            if (plzField.value !== outputPostalCode){
+                plzField.value = `${outputPostalCode}`
+            }
+        }/* else {
             localityField.value = '';
             plzField.value = '';
         }
+        */
     }
 }
 
