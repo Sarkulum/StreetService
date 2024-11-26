@@ -15,11 +15,6 @@ class Script {
             const plz = plzInput.value.trim();
             const locality = localityInput.value.trim();
 
-            if (!name && !plz && !locality) {
-                dropdown.innerHTML = '<option value="">Enter values to search...</option>';
-                return;
-            }
-
             const url = `/api/OpenPLZ/streets?name=${encodeURIComponent(name)}&plz=${encodeURIComponent(plz)}&locality=${encodeURIComponent(locality)}`;
 
             const response = await fetch(url);
@@ -30,6 +25,11 @@ class Script {
                     datalist.innerHTML = '';
                     this.data = await response.json();
 
+                    if (this.data.length === 0) {
+                        console.warn("No data received for the given inputs.");
+                        return;
+                    }
+
                     this.data.forEach((item) => {
                         const option = document.createElement('option');
                         option.value = item.outputStreet;
@@ -39,15 +39,12 @@ class Script {
                     console.log(this.data); // Debug
                 } catch (jsonError) {
                     console.error("Failed to parse the response JSON:", jsonError);
-                    dropdown.innerHTML = '<option value="">Invalid data received. Please try again.</option>';
                 }
             } else {
                 console.error(`Failed to fetch data: ${response.status} - ${response.statusText}`);
-                dropdown.innerHTML = `<option value="">Error: ${response.status} - ${response.statusText}</option>`;
             }
         } catch (networkError) {
             console.error("Network error occurred while fetching data:", networkError);
-            dropdown.innerHTML = '<option value="">Failed to fetch data. Please check your connection.</option>';
         }
     }
 
@@ -90,7 +87,7 @@ class Script {
         streetField.addEventListener('change', () => {
             this.isDatalistSelection = true;
             const selectedValue = streetField.value;
-            this.addLocality(selectedValue);
+            this.addOtherInformation(selectedValue);
         });
     }
 }
